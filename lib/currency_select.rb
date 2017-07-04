@@ -94,7 +94,7 @@ module ActionView
       end
     end
 
-    module ToCurrencySelectTag
+    class CurrencySelectTag < Tags::Base
       def to_currency_select_tag(priority_currencies, options, html_options)
         html_options = html_options.stringify_keys
         add_default_name_and_id(html_options)
@@ -102,15 +102,23 @@ module ActionView
         content_tag('select', add_options(currency_options_for_select(value, priority_currencies), options, value), html_options)
       end
     end
+  end
+end
 
-    class CurrencySelectTag < Tags::Base
-      include ToCurrencySelectTag
-    end
-
+module ActionView
+  module Helpers
     class FormBuilder
       def currency_select(method, priority_currencies = nil, options = {}, html_options = {})
-        @template.currency_select(@object_name, method, priority_currencies, options.merge(:object => @object), html_options)
+        @template.currency_select(object_name, method, priority_currencies, options.merge(:object => object), html_options)
       end
+    end
+  end
+end
+
+module SimpleForm
+  class FormBuilder < ActionView::Helpers::FormBuilder
+    def currency_select(method, priority_currencies = nil, options = {}, html_options = {})
+      @template.currency_select(object_name, method, priority_currencies, options.merge(:object => object), html_options)
     end
   end
 end
